@@ -1,46 +1,68 @@
 #include <iostream>
-#include <vector>
 using namespace std;
+
 class Bulanan {
 public:
     int bulan;
     int uangSaku;
     int pengeluaran;
     int tabungan;
-    Bulanan(int b, int saku, int keluar) {
+
+    Bulanan() {
+        bulan = uangSaku = pengeluaran = tabungan = 0;
+    }
+
+    void isiData(int b, int saku, int keluar) {
         bulan = b;
         uangSaku = saku;
         pengeluaran = keluar;
         tabungan = saku - keluar;
     }
+
     void tampilkan() {
+    	cout << "-------------------------\n";
         cout << "Bulan " << bulan << ":\n";
         cout << "  Uang Saku     : " << uangSaku << "\n";
         cout << "  Pengeluaran   : " << pengeluaran << "\n";
-        cout << "  Tabungan      : " << tabungan << "\n";
+        cout << " Tabungan      : " << tabungan << "\n";
         cout << "-------------------------\n";
     }
 };
+
 class Keuangan {
 private:
-    vector<Bulanan> data;
+    Bulanan data[12];
+    int jumlah;
+
 public:
-    void tambahData(int bulan, int saku, int keluar) {
-        data.push_back(Bulanan(bulan, saku, keluar));
+    Keuangan() {
+        jumlah = 0;
     }
+
+    void tambahData(int bulan, int saku, int keluar) {
+        if (jumlah < 12) {
+            data[jumlah].isiData(bulan, saku, keluar);
+            jumlah++;
+        } else {
+            cout << "Data sudah mencapai batas maksimum!\n";
+        }
+    }
+
     void tampilkanDataIteratif() {
         cout << "\n--- Data Keuangan Andi ---\n";
-        for (int i = 0; i < data.size(); i++) {
+        for (int i = 0; i < jumlah; i++) {
             data[i].tampilkan();
         }
     }
+
     int totalPengeluaran() {
         int total = 0;
-        for (int i = 0; i < data.size(); i++) {
-    total += data[i].pengeluaran;
+        for (int i = 0; i < jumlah; i++) {
+            total += data[i].pengeluaran;
         }
         return total;
     }
+
     int totalTabunganRekursif(int i) {
         if (i < 0) return 0;
         return data[i].tabungan + totalTabunganRekursif(i - 1);
@@ -49,14 +71,22 @@ public:
     void tampilkanRingkasan() {
         cout << "\n--- Ringkasan ---\n";
         cout << "Total Pengeluaran : " << totalPengeluaran() << "\n";
-        cout << "Total Tabungan    : " << totalTabunganRekursif(data.size() - 1) << "\n";
+        cout << "Total Tabungan    : " << totalTabunganRekursif(jumlah - 1) << "\n";
     }
 };
+
 int main() {
     Keuangan andi;
     int bulan, saku, keluar, jumlahBulan;
-    cout << "Masukkan jumlah bulan: ";
+
+    cout << "Masukkan jumlah bulan (maks 12): ";
     cin >> jumlahBulan;
+
+    if (jumlahBulan > 12) {
+        cout << "Jumlah bulan melebihi batas maksimal (12).\n";
+        return 1;
+    }
+
     for (int i = 1; i <= jumlahBulan; i++) {
         cout << "\nBulan ke-" << i << ":\n";
         cout << "Uang saku       : ";
@@ -66,7 +96,9 @@ int main() {
 
         andi.tambahData(i, saku, keluar);
     }
+
     andi.tampilkanDataIteratif();
     andi.tampilkanRingkasan();
-    return 0;
+
+    return 0;
 }
